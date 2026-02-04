@@ -1,14 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    '/chart1.png',
+    '/chart2.png'
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Dziękujemy za zainteresowanie! Skontaktujemy się z Tobą: ${email}`);
-    setEmail('');
+    // Store email in localStorage for potential future use
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pracuj-radar-email', email);
+    }
+    router.push('/thank-you');
   };
 
   return (
@@ -17,9 +35,11 @@ export default function Home() {
       <header className="px-6 py-4 border-b bg-white shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#4C40F7' }}>
-              <span className="text-white font-bold text-xl">P</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="Pracuj.pl"
+              className="h-10 w-auto"
+            />
             <span className="text-2xl font-bold" style={{ color: '#4C40F7' }}>
               Pracuj Radar
             </span>
@@ -74,13 +94,40 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Hero Image */}
-          <div className="hidden md:block">
-            <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop"
-              alt="Professional working"
-              className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
-            />
+          {/* Hero Image Carousel */}
+          <div className="hidden md:block relative">
+            <div className="relative rounded-2xl shadow-2xl overflow-hidden h-[500px]">
+              {slides.map((slide, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-1000 ${
+                    index === currentSlide ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <img
+                    src={slide}
+                    alt={`Slide ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Carousel Dots */}
+            <div className="flex justify-center gap-2 mt-4">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentSlide
+                      ? 'w-8'
+                      : 'bg-gray-300'
+                  }`}
+                  style={index === currentSlide ? { backgroundColor: '#4C40F7' } : {}}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
