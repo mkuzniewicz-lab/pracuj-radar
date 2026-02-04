@@ -20,13 +20,30 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Store email in localStorage for potential future use
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('pracuj-radar-email', email);
+
+    try {
+      // Send email to API
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      // Store email in localStorage for potential future use
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('pracuj-radar-email', email);
+      }
+
+      router.push('/thank-you');
+    } catch (error) {
+      console.error('Subscription error:', error);
+      // Still redirect to thank you page even if API fails
+      router.push('/thank-you');
     }
-    router.push('/thank-you');
   };
 
   return (
