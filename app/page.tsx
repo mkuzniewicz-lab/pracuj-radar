@@ -7,6 +7,7 @@ export default function Home() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const slides = [
     '/chart1.png',
@@ -22,6 +23,7 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       // Send email to API
@@ -43,6 +45,8 @@ export default function Home() {
       console.error('Subscription error:', error);
       // Still redirect to thank you page even if API fails
       router.push('/thank-you');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -94,14 +98,26 @@ export default function Home() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Twój email"
                   required
-                  className="flex-1 px-6 py-4 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-purple-500 text-lg"
+                  disabled={isSubmitting}
+                  className="flex-1 px-6 py-4 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-purple-500 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                   type="submit"
-                  className="px-8 py-4 text-white rounded-lg transition-all font-medium text-lg shadow-lg hover:shadow-xl"
+                  disabled={isSubmitting}
+                  className="px-8 py-4 text-white rounded-lg transition-all font-medium text-lg shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 relative overflow-hidden"
                   style={{ backgroundColor: '#4C40F7' }}
                 >
-                  Dołącz
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Zapisuję...
+                    </span>
+                  ) : (
+                    'Dołącz'
+                  )}
                 </button>
               </div>
             </form>
@@ -258,14 +274,26 @@ export default function Home() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Twój email"
                 required
-                className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white text-lg"
+                disabled={isSubmitting}
+                className="flex-1 px-6 py-4 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
-                className="px-8 py-4 bg-white rounded-lg hover:bg-gray-100 transition-colors font-medium text-lg shadow-lg"
+                disabled={isSubmitting}
+                className="px-8 py-4 bg-white rounded-lg hover:bg-gray-100 transition-colors font-medium text-lg shadow-lg disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 relative overflow-hidden"
                 style={{ color: '#4C40F7' }}
               >
-                Zapisz się
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Zapisuję...
+                  </span>
+                ) : (
+                  'Zapisz się'
+                )}
               </button>
             </div>
           </form>
